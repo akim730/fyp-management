@@ -1,21 +1,44 @@
 using fypSystem.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection; // Added for scope creation
-using System.Collections.Generic; // Added for List<T>
-using System.Linq; // Added for LINQ operations
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+if (builder.Environment.IsDevelopment())
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString,
+            sqlOptions => sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null
+            )));
+}
+else
+{
+    var connectionString = builder.Configuration.GetConnectionString("Productiondb")
+        ?? throw new InvalidOperationException("Connection string 'Productiondb' not found.");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString,
+            sqlOptions => sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null
+            )));
+}
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>() // Make sure this line is present
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -33,14 +56,17 @@ else
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseAuthorization();
 
-// ---------------------------------------------------------------------------------------
-// UPDATED ROLE AND INITIAL USER SEEDING LOGIC HERE
+// Auto migrate and seed
 using (var scope = app.Services.CreateScope())
 {
     var serviceProvider = scope.ServiceProvider;
+
+    // Auto-apply migrations on startup
+    var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+
     var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
@@ -54,8 +80,6 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // 2. Seed Users and Assign Roles
-
     // Helper to log errors
     void LogErrors(IdentityResult result, string email)
     {
@@ -65,9 +89,9 @@ using (var scope = app.Services.CreateScope())
         }
     }
 
-    // Admin User (typically a single instance)
+    // Admin User
     string adminEmail = "admin@fyp.com";
-    string adminPassword = "AdminPassword2!"; // CHANGE THIS FOR PRODUCTION!
+    string adminPassword = "AdminPassword2!";
     if (await userManager.FindByEmailAsync(adminEmail) == null)
     {
         var adminUser = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
@@ -81,15 +105,13 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Admin user '{adminEmail}' already exists.");
     }
 
-
-    // --- Seeding Multiple Supervisor Users ---
+    // Supervisor Users
     var supervisorData = new List<(string Email, string Password)>
     {
         ("supervisor@fyp.com", "SupervisorPassword!"),
         ("supervisor1@fyp.com", "Supervisor1Password!"),
         ("supervisor2@fyp.com", "Supervisor2Password!"),
         ("supervisor3@fyp.com", "Supervisor3Password!")
-        // Add more supervisors here
     };
 
     foreach (var (email, password) in supervisorData)
@@ -103,24 +125,17 @@ using (var scope = app.Services.CreateScope())
                 await userManager.AddToRoleAsync(supervisorUser, "Supervisor");
                 Console.WriteLine($"Seeded Supervisor User: {email}");
             }
-            else
-            {
-                LogErrors(result, email);
-            }
+            else LogErrors(result, email);
         }
-        else
-        {
-            Console.WriteLine($"Supervisor user '{email}' already exists.");
-        }
+        else Console.WriteLine($"Supervisor user '{email}' already exists.");
     }
 
-    // --- Seeding Multiple Evaluator Users ---
+    // Evaluator Users
     var evaluatorData = new List<(string Email, string Password)>
     {
         ("evaluator1@fyp.com", "Evaluator1Password!"),
         ("evaluator2@fyp.com", "Evaluator2Password!"),
         ("evaluator3@fyp.com", "Evaluator3Password!")
-        // Add more evaluators here
     };
 
     foreach (var (email, password) in evaluatorData)
@@ -134,24 +149,17 @@ using (var scope = app.Services.CreateScope())
                 await userManager.AddToRoleAsync(evaluatorUser, "Evaluator");
                 Console.WriteLine($"Seeded Evaluator User: {email}");
             }
-            else
-            {
-                LogErrors(result, email);
-            }
+            else LogErrors(result, email);
         }
-        else
-        {
-            Console.WriteLine($"Evaluator user '{email}' already exists.");
-        }
+        else Console.WriteLine($"Evaluator user '{email}' already exists.");
     }
 
-    // --- Seeding Multiple Committee Users ---
+    // Committee Users
     var committeeData = new List<(string Email, string Password)>
     {
         ("committee1@fyp.com", "Committee1Password!"),
         ("committee2@fyp.com", "Committee2Password!"),
         ("committee3@fyp.com", "Committee3Password!")
-        // Add more committee members here as needed
     };
 
     foreach (var (email, password) in committeeData)
@@ -165,19 +173,12 @@ using (var scope = app.Services.CreateScope())
                 await userManager.AddToRoleAsync(committeeUser, "Committee");
                 Console.WriteLine($"Seeded Committee User: {email}");
             }
-            else
-            {
-                LogErrors(result, email);
-            }
+            else LogErrors(result, email);
         }
-        else
-        {
-            Console.WriteLine($"Committee user '{email}' already exists.");
-        }
+        else Console.WriteLine($"Committee user '{email}' already exists.");
     }
 
-
-    // --- Seeding Multiple Student Users ---
+    // Student Users
     var studentData = new List<(string Email, string Password)>
     {
         ("student@fyp.com", "StudentPassword!"),
@@ -185,8 +186,6 @@ using (var scope = app.Services.CreateScope())
         ("student2@fyp.com", "Student2Password!"),
         ("student3@fyp.com", "Student3Password!"),
         ("student4@fyp.com", "Student4Password!")
-
-        // Add more students here
     };
 
     foreach (var (email, password) in studentData)
@@ -200,18 +199,11 @@ using (var scope = app.Services.CreateScope())
                 await userManager.AddToRoleAsync(studentUser, "Student");
                 Console.WriteLine($"Seeded Student: {email}");
             }
-            else
-            {
-                LogErrors(result, email);
-            }
+            else LogErrors(result, email);
         }
-        else
-        {
-            Console.WriteLine($"Student user '{email}' already exists.");
-        }
+        else Console.WriteLine($"Student user '{email}' already exists.");
     }
 }
-// ---------------------------------------------------------------------------------------
 
 app.MapStaticAssets();
 
