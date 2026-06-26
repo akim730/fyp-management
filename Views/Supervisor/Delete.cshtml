@@ -1,0 +1,74 @@
+﻿@model fypSystem.Models.Supervisor
+
+@{
+    ViewData["Title"] = "Delete Supervisor";
+}
+
+<h1 class="text-2xl font-bold mb-4">Delete Supervisor</h1>
+
+<h3 class="text-danger">Are you sure you want to delete this supervisor?</h3>
+<div>
+    <h4 class="mb-3">Lecturer Information</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Lecturer.StaffNo)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Lecturer.StaffNo)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Lecturer.Name)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Lecturer.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Lecturer.Email)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Lecturer.Email)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Lecturer.AcademicProgram)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Lecturer.AcademicProgram.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Lecturer.AcademicRank)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Lecturer.AcademicRank)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Lecturer.Domain)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Lecturer.Domain)
+        </dd>
+    </dl>
+
+    <h4 class="mt-4 mb-3">Supervisor Role Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.SupervisorType)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.SupervisorType)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.MaxStudents)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.MaxStudents)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+    </form>
+</div>

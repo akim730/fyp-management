@@ -1,0 +1,74 @@
+﻿@model fypSystem.Models.CommitteeMember
+
+@{
+    ViewData["Title"] = "Create Committee Member";
+}
+
+<h1 class="display-4 mb-4">Create New Committee Member</h1>
+
+<h4 class="mb-3">Committee Member Information</h4>
+<hr />
+
+@* TempData Messages using Bootstrap Alerts *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Warning!</strong> @TempData["WarningMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="LecturerId" class="form-label"></label>
+                <select asp-for="LecturerId" class="form-select" asp-items="ViewBag.LecturerId">
+                    <option value="">-- Select Lecturer --</option>
+                </select>
+                <span asp-validation-for="LecturerId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CommitteeRole" class="form-label"></label>
+                <input asp-for="CommitteeRole" class="form-control" />
+                <span asp-validation-for="CommitteeRole" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="AppointmentDate" class="form-label"></label>
+                <input asp-for="AppointmentDate" class="form-control" type="date" />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+            </div>
+
+            @* AcademicProgramId field removed as requested. It will be set in the controller. *@
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

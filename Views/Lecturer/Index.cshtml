@@ -1,0 +1,55 @@
+﻿@model IEnumerable<fypSystem.Models.Lecturer>
+
+@{
+    ViewData["Title"] = "Lecturers";
+}
+
+<h1 class="text-2xl font-bold mb-4">Lecturers</h1>
+
+<p>
+    @* {{ Hide Create button unless user is Admin }} *@
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">Create New</a>
+    }
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(m => m.StaffNo)</th>
+                <th>@Html.DisplayNameFor(m => m.Name)</th>
+                <th>@Html.DisplayNameFor(m => m.Email)</th>
+                <th>@Html.DisplayNameFor(m => m.Gender)</th>
+                <th>@Html.DisplayNameFor(m => m.AcademicProgram)</th>
+                <th>@Html.DisplayNameFor(m => m.AcademicRank)</th>
+                <th>@Html.DisplayNameFor(m => m.Domain)</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(_ => item.StaffNo)</td>
+                    <td>@Html.DisplayFor(_ => item.Name)</td>
+                    <td>@Html.DisplayFor(_ => item.Email)</td>
+                    <td>@Html.DisplayFor(_ => item.Gender)</td>
+                    <td>@Html.DisplayFor(_ => item.AcademicProgram.Name)</td>
+                    <td>@Html.DisplayFor(_ => item.AcademicRank)</td>
+                    <td>@Html.DisplayFor(_ => item.Domain)</td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary ms-1">Details</a>
+                        @* {{ Hide Delete button unless user is Admin }} *@
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,96 @@
+﻿@model fypSystem.Models.Lecturer
+
+@{
+    ViewData["Title"] = "Create Lecturer";
+}
+
+<h1 class="text-2xl font-bold mb-4">Create Lecturer</h1>
+
+<h4 class="mb-3">Lecturer Information</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="StaffNo" class="control-label"></label>
+                <input asp-for="StaffNo" class="form-control" />
+                <span asp-validation-for="StaffNo" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="DateOfBirth" class="control-label"></label>
+                <input asp-for="DateOfBirth" class="form-control" type="date" />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="">-- Select Gender --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Address" class="control-label"></label>
+                <textarea asp-for="Address" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AcademicProgramId" class="control-label"></label>
+                <select asp-for="AcademicProgramId" class="form-control" asp-items="ViewBag.AcademicProgramId"></select>
+                <span asp-validation-for="AcademicProgramId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AcademicRank" class="control-label"></label>
+                <select asp-for="AcademicRank" class="form-control" asp-items="ViewBag.AcademicRank"></select>
+                <span asp-validation-for="AcademicRank" class="text-danger"></span>
+            </div>
+
+            @* {{ NEW DOMAIN FIELD }} *@
+            <div class="form-group mb-3">
+                <label asp-for="Domain" class="control-label"></label>
+                <select asp-for="Domain" class="form-control" asp-items="ViewBag.Domain">
+                    <option value="">-- Select Domain --</option> @* Optional: Allow no domain initially *@
+                </select>
+                <span asp-validation-for="Domain" class="text-danger"></span>
+            </div>
+            @* {{ END NEW DOMAIN FIELD }} *@
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

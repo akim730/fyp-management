@@ -1,0 +1,172 @@
+﻿@model fypSystem.Models.ProjectProposal
+@using fypSystem.Models
+
+@{
+    ViewData["Title"] = "Project Details: " + Model.Title;
+}
+
+<h1 class="text-2xl font-bold mb-4">Project Details: "@Model.Title"</h1>
+
+
+@* TempData Messages using Bootstrap Alerts *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Proposal Information</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Title)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Title)</dd>
+
+            <dt class="col-sm-3">Student Name:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.Name) (@Html.DisplayFor(model => model.Student.StudentNo))</dd>
+
+            <dt class="col-sm-3">Academic Program:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.AcademicProgram.Name)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProjectType)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.ProjectType)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SubmissionDate)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SubmissionDate)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9">
+                <span class="badge
+                    @(Model.Status == ProposalStatus.Approved ? "bg-success" :
+                                            Model.Status == ProposalStatus.Rejected ? "bg-danger" :
+                                            Model.Status == ProposalStatus.ResubmissionRequired || Model.Status == ProposalStatus.AcceptedWithConditions ? "bg-warning text-dark" :
+                                            "bg-secondary")">
+                    @Html.DisplayFor(model => model.Status)
+                </span>
+            </dd>
+
+            @if (Model.MainSupervisorLecturer != null)
+            {
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MainSupervisorLecturer)</dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.MainSupervisorLecturer.Name)
+                    <small class="text-muted">(Email: @Model.MainSupervisorLecturer.Email)</small>
+                </dd>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.FilePath))
+            {
+                <dt class="col-sm-3">Proposal File:</dt>
+                <dd class="col-sm-9">
+                    <a asp-action="Download" asp-route-id="@Model.Id" class="btn btn-sm btn-info" target="_blank">Download Proposal PDF</a>
+                </dd>
+            }
+        </dl>
+    </div>
+</div>
+
+@* ===================================================================== *@
+@* EVALUATOR FEEDBACK SECTION *@
+@* ===================================================================== *@
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+        <h4 class="mb-0">Evaluator Feedback</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.Evaluator1 == null && Model.Evaluator2 == null)
+        {
+            <div class="alert alert-info" role="alert">
+                No evaluators have been assigned to this proposal yet.
+            </div>
+        }
+        else
+        {
+            @* Evaluator 1 Feedback *@
+            <h5 class="mt-3">Evaluator 1: @(Model.Evaluator1?.Name ?? "Not Assigned")</h5>
+            @if (Model.Evaluator1 != null)
+            {
+                <dl class="row">
+                    <dt class="col-sm-3">Recommendation:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Evaluator1Recommendation.HasValue)
+                        {
+                            <span class="badge
+                                            @(Model.Evaluator1Recommendation == ProposalStatus.Approved ? "bg-success" :
+                                                                    Model.Evaluator1Recommendation == ProposalStatus.Rejected ? "bg-danger" :
+                                                                    Model.Evaluator1Recommendation == ProposalStatus.AcceptedWithConditions ? "bg-warning text-dark" :
+                                                                    "bg-secondary")">
+                    @Html.DisplayFor(model => model.Evaluator1Recommendation)
+                </span>
+                                }
+                        else
+                        {
+                            <span class="text-muted">Not yet submitted</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Comments:</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Evaluator1Feedback) ? "No comments provided." : Model.Evaluator1Feedback)</dd>
+
+                    <dt class="col-sm-3">Review Date:</dt>
+                    <dd class="col-sm-9">@(Model.Evaluator1ReviewDate.HasValue? Model.Evaluator1ReviewDate.Value.ToShortDateString() : "N/A")</dd>
+                </dl>
+            }
+            else
+            {
+                <p class="text-muted">Evaluator 1 is not assigned.</p>
+            }
+
+            <hr class="my-4" />
+
+            @* Evaluator 2 Feedback *@
+            <h5 class="mt-3">Evaluator 2: @(Model.Evaluator2?.Name ?? "Not Assigned")</h5>
+            @if (Model.Evaluator2 != null)
+            {
+                <dl class="row">
+                    <dt class="col-sm-3">Recommendation:</dt>
+                    <dd class="col-sm-9">
+                        @if (Model.Evaluator2Recommendation.HasValue)
+                        {
+                            <span class="badge
+                                            @(Model.Evaluator2Recommendation == ProposalStatus.Approved ? "bg-success" :
+                                                                    Model.Evaluator2Recommendation == ProposalStatus.Rejected ? "bg-danger" :
+                                                                    Model.Evaluator2Recommendation == ProposalStatus.AcceptedWithConditions ? "bg-warning text-dark" :
+                                                                    "bg-secondary")">
+                    @Html.DisplayFor(model => model.Evaluator2Recommendation)
+                </span>
+                                }
+                        else
+                        {
+                            <span class="text-muted">Not yet submitted</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-3">Comments:</dt>
+                    <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.Evaluator2Feedback) ? "No comments provided." : Model.Evaluator2Feedback)</dd>
+
+                    <dt class="col-sm-3">Review Date:</dt>
+                    <dd class="col-sm-9">@(Model.Evaluator2ReviewDate.HasValue? Model.Evaluator2ReviewDate.Value.ToShortDateString() : "N/A")</dd>
+                </dl>
+            }
+            else
+            {
+                <p class="text-muted">Evaluator 2 is not assigned.</p>
+            }
+        }
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="AssignedProjects" class="btn btn-secondary">Back to My Supervised Projects</a>
+</div>

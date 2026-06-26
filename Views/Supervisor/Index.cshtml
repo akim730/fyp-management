@@ -1,0 +1,52 @@
+﻿@model IEnumerable<fypSystem.Models.Supervisor>
+
+@{
+    ViewData["Title"] = "Supervisors";
+}
+
+<h1 class="text-2xl font-bold mb-4">Supervisors</h1>
+
+<p>
+    @* {{ The Create button for Supervisors is only visible to Admin, as per controller authorization }} *@
+    @* No explicit User.IsInRole("Admin") check needed here, as the controller is already [Authorize(Roles = "Admin")] *@
+    <a asp-action="Create" class="btn btn-primary">Add New Supervisor</a>
+</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Lecturer.StaffNo)</th>
+                <th>@Html.DisplayNameFor(model => model.Lecturer.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Lecturer.Email)</th>
+                <th>@Html.DisplayNameFor(model => model.Lecturer.AcademicProgram)</th>
+                <th>@Html.DisplayNameFor(model => model.Lecturer.AcademicRank)</th>
+                <th>@Html.DisplayNameFor(model => model.Lecturer.Domain)</th>
+                <th>@Html.DisplayNameFor(model => model.SupervisorType)</th>
+                <th>@Html.DisplayNameFor(model => model.MaxStudents)</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(_ => item.Lecturer.StaffNo)</td>
+                    <td>@Html.DisplayFor(_ => item.Lecturer.Name)</td>
+                    <td>@Html.DisplayFor(_ => item.Lecturer.Email)</td>
+                    <td>@Html.DisplayFor(_ => item.Lecturer.AcademicProgram.Name)</td>
+                    <td>@Html.DisplayFor(_ => item.Lecturer.AcademicRank)</td>
+                    <td>@Html.DisplayFor(_ => item.Lecturer.Domain)</td>
+                    <td>@Html.DisplayFor(_ => item.SupervisorType)</td>
+                    <td>@Html.DisplayFor(_ => item.MaxStudents)</td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Edit</a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary ms-1">Details</a>
+                        @* {{ Delete button is always visible here, as the controller is Admin-only }} *@
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,56 @@
+﻿@model fypSystem.Models.CommitteeMember
+
+@{
+    ViewData["Title"] = "Edit Committee Member";
+}
+
+<h1 class="text-2xl font-bold mb-4">Edit Committee Member</h1>
+
+<h4 class="mb-3">Committee Member Information</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" /> @* Hidden field for the CommitteeMember Id *@
+
+            <div class="form-group mb-3">
+                <label asp-for="LecturerId" class="control-label"></label>
+                <select asp-for="LecturerId" class="form-control" asp-items="ViewBag.LecturerId"></select>
+                <span asp-validation-for="LecturerId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="CommitteeRole" class="control-label"></label>
+                <input asp-for="CommitteeRole" class="form-control" />
+                <span asp-validation-for="CommitteeRole" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="AppointmentDate" class="control-label"></label>
+                <input asp-for="AppointmentDate" class="form-control" type="date" />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+            </div>
+
+            @* Uncomment this block if CommitteeMember model has AcademicProgramId *@
+            @*
+            <div class="form-group mb-3">
+                <label asp-for="AcademicProgramId" class="control-label"></label>
+                <select asp-for="AcademicProgramId" class="form-control" asp-items="ViewBag.AcademicProgramId"></select>
+                <span asp-validation-for="AcademicProgramId" class="text-danger"></span>
+            </div>
+            *@
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,161 @@
+﻿@model fypSystem.Models.ProjectProposal
+
+@{
+    ViewData["Title"] = "Submit New Project Proposal";
+}
+
+<h1 class="display-4 mb-4">Submit New Project Proposal</h1>
+
+<h4 class="mb-3">Project Details & Supervisor Preference</h4>
+<hr />
+
+@* TempData Messages using Bootstrap Alerts *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["WarningMessage"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Warning!</strong> @TempData["WarningMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <strong>Info:</strong> @TempData["InfoMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            @* IMPORTANT: Added enctype for file upload *@
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="StudentId" /> @* StudentId is set by controller *@
+            <input type="hidden" asp-for="SubmissionDate" /> @* SubmissionDate is set by controller *@
+            <input type="hidden" asp-for="Status" /> @* Status is set by controller *@
+
+            @* ===================================================================== *@
+            @* SUPERVISOR PREFERENCE SECTION *@
+            @* ===================================================================== *@
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Supervisor Preference</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var currentRequest = ViewBag.CurrentSupervisorRequest as fypSystem.Models.StudentSupervisor;
+                    }
+
+                    @if (currentRequest != null)
+                    {
+                        <div class="alert alert-info" role="alert">
+                            <p><strong>Your Current Supervisor Request Status:</strong></p>
+                            <p>Supervisor: @currentRequest.Supervisor.Lecturer.Name</p>
+                            <p>Status: <span class="badge @(currentRequest.Status == fypSystem.Models.SupervisorAssignmentStatus.Approved ? "bg-success" : currentRequest.Status == fypSystem.Models.SupervisorAssignmentStatus.Pending ? "bg-warning text-dark" : "bg-danger")">@currentRequest.Status</span></p>
+                            <p>Requested On: @currentRequest.RequestDate.ToShortDateString()</p>
+                            @if (currentRequest.ActionDate.HasValue)
+                            {
+                                <p>Actioned On: @currentRequest.ActionDate.Value.ToShortDateString()</p>
+                            }
+                            @if (!string.IsNullOrEmpty(currentRequest.CommitteeRemarks))
+                            {
+                                <p>Committee Remarks: @currentRequest.CommitteeRemarks</p>
+                            }
+                        </div>
+
+                        @if (currentRequest.Status == fypSystem.Models.SupervisorAssignmentStatus.Approved || currentRequest.Status == fypSystem.Models.SupervisorAssignmentStatus.Pending)
+                        {
+                            <div class="alert alert-warning" role="alert">
+                                You cannot change your preferred supervisor while a request is pending or approved. Please contact the committee if you need to make changes.
+                            </div>
+                            <div class="mb-3">
+                                <label for="PreferredSupervisorId" class="form-label">Select Preferred Supervisor</label>
+                                <select id="PreferredSupervisorId" name="PreferredSupervisorId" class="form-select" asp-items="ViewBag.PreferredSupervisorId" disabled>
+                                </select>
+                                <span class="text-danger">@Html.ValidationMessage("PreferredSupervisorId")</span>
+                            </div>
+                        }
+                        else // If status is Rejected or other, allow re-selection
+                        {
+                            <div class="mb-3">
+                                <label for="PreferredSupervisorId" class="form-label">Select Preferred Supervisor</label>
+                                <select id="PreferredSupervisorId" name="PreferredSupervisorId" class="form-select" asp-items="ViewBag.PreferredSupervisorId">
+                                </select>
+                                <span class="text-danger">@Html.ValidationMessage("PreferredSupervisorId")</span>
+                            </div>
+                        }
+                    }
+                    else // If no current request, allow selection
+                    {
+                        <div class="mb-3">
+                            <label for="PreferredSupervisorId" class="form-label">Select Preferred Supervisor</label>
+                            <select id="PreferredSupervisorId" name="PreferredSupervisorId" class="form-select" asp-items="ViewBag.PreferredSupervisorId">
+                            </select>
+                            <span class="text-danger">@Html.ValidationMessage("PreferredSupervisorId")</span>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* ===================================================================== *@
+            @* PROJECT PROPOSAL DETAILS SECTION *@
+            @* ===================================================================== *@
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">Project Proposal Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProjectType" class="form-label"></label>
+                        <select asp-for="ProjectType" class="form-select" asp-items="Html.GetEnumSelectList<fypSystem.Models.ProjectType>()">
+                            <option value="">-- Select Project Type --</option>
+                        </select>
+                        <span asp-validation-for="ProjectType" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="proposalFile" class="form-label">Upload Proposal File (PDF)</label>
+                        <input type="file" id="proposalFile" name="proposalFile" class="form-control" accept=".pdf" />
+                        <span class="text-danger">@Html.ValidationMessage("proposalFile")</span>
+                        @if (!string.IsNullOrEmpty(Model.FilePath))
+                        {
+                            <small class="form-text text-muted mt-1">Current file: <a href="@Model.FilePath" target="_blank">View Current Proposal</a> (Uploading a new file will replace this)</small>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Submit Proposal</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to My Proposals</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

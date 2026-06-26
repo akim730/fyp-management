@@ -1,0 +1,80 @@
+﻿@model fypSystem.Models.Lecturer
+
+@{
+    ViewData["Title"] = "Lecturer Details";
+}
+
+<h1 class="text-2xl font-bold mb-4">Lecturer Details</h1>
+
+<div>
+    <h4 class="mb-3">Lecturer Information</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.StaffNo)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.StaffNo)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.DateOfBirth)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.DateOfBirth)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Gender)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Gender)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.PhoneNumber)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.PhoneNumber)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.AcademicProgram)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.AcademicProgram.Name)
+        </dd>
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.AcademicRank)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.AcademicRank)
+        </dd>
+        {{ NEW DOMAIN FIELD }}
+        <dt class="col-sm-3">
+            @Html.DisplayNameFor(model => model.Domain)
+        </dt>
+        <dd class="col-sm-9">
+            @Html.DisplayFor(model => model.Domain)
+        </dd>
+
+    </dl>
+</div>
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>
+    <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+</div>

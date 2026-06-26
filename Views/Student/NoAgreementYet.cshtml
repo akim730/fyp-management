@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "No Agreement Found";
+}
+
+<h1 class="text-2xl font-bold mb-4">No Supervisor Agreement Found</h1>
+
+<div class="alert alert-info" role="alert">
+    <p><strong>@ViewBag.Message</strong></p>
+    <p>This page displays your formal agreement with your assigned Final Year Project supervisor once it has been reviewed and approved by the committee.</p>
+    <p class="mb-0">Please check back at a later time. If you believe there's an error or need immediate assistance, kindly reach out to your academic advisor or the FYP coordinator.</p>
+</div>
+
+<div class="mt-4">
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Dashboard</a>
+</div>

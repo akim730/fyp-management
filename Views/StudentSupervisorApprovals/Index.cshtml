@@ -1,0 +1,67 @@
+﻿@model IEnumerable<fypSystem.Models.StudentSupervisor>
+
+@{
+    ViewData["Title"] = "Pending Supervisor Requests";
+}
+
+<h1 class="text-2xl font-bold mb-4">Pending Supervisor Requests</h1>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        No pending supervisor requests at this time.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Student Name</th>
+                    <th>Student Matric No.</th>
+                    <th>Student Program</th>
+                    <th>Preferred Supervisor</th>
+                    <th>Supervisor Program</th>
+                    <th>Request Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(_ => item.Student.Name)</td>
+                        <td>@Html.DisplayFor(_ => item.Student.StudentNo)</td>
+                        <td>@Html.DisplayFor(_ => item.Student.AcademicProgram.Name)</td>
+                        <td>@Html.DisplayFor(_ => item.Supervisor.Lecturer.Name)</td>
+                        <td>@Html.DisplayFor(_ => item.Supervisor.Lecturer.AcademicProgram.Name)</td>
+                        <td>@Html.DisplayFor(_ => item.RequestDate)</td>
+                        <td>
+                            <span class="badge @(item.Status == fypSystem.Models.SupervisorAssignmentStatus.Approved ? "bg-success" : item.Status == fypSystem.Models.SupervisorAssignmentStatus.Pending ? "bg-warning" : "bg-danger")">
+                                @Html.DisplayFor(_ => item.Status)
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Review</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

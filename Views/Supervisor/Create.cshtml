@@ -1,0 +1,53 @@
+﻿@model fypSystem.Models.Supervisor
+
+@{
+    ViewData["Title"] = "Create Supervisor";
+}
+
+<h1 class="text-2xl font-bold mb-4">Create New Supervisor</h1>
+
+<h4 class="mb-3">Supervisor Information</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            @* {{ This dropdown will be populated by available lecturers from ViewBag.LecturerId }} *@
+            <div class="form-group mb-3">
+                <label asp-for="LecturerId" class="control-label"></label>
+                <select asp-for="LecturerId" class="form-control" asp-items="ViewBag.LecturerId">
+                    <option value="">-- Select Lecturer --</option> {{ Optional: Add a default empty option }}
+                </select>
+                <span asp-validation-for="LecturerId" class="text-danger"></span>
+            </div>
+
+            @* {{ Dropdown for SupervisorType }} *@
+            <div class="form-group mb-3">
+                <label asp-for="SupervisorType" class="control-label"></label>
+                <select asp-for="SupervisorType" class="form-control" asp-items="ViewBag.SupervisorType">
+                    <option value="">-- Select Type --</option>
+                </select>
+                <span asp-validation-for="SupervisorType" class="text-danger"></span>
+            </div>
+
+            @* {{ Input for MaxStudents }} *@
+            <div class="form-group mb-3">
+                <label asp-for="MaxStudents" class="control-label"></label>
+                <input asp-for="MaxStudents" class="form-control" />
+                <span asp-validation-for="MaxStudents" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

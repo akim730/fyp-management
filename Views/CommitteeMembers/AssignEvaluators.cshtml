@@ -1,0 +1,115 @@
+﻿@model fypSystem.Models.ProjectProposal
+@using fypSystem.Models
+
+@{
+    ViewData["Title"] = "Assign Evaluators for Project: " + Model.Title;
+}
+
+<h1 class="text-2xl font-bold mb-4">Assign Evaluators for Project: "@Model.Title"</h1>
+
+
+@* TempData Messages using Bootstrap Alerts *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h4 class="mb-0">Project Details</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Student Name:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.Name)</dd>
+
+            <dt class="col-sm-3">Student Matric No.:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.StudentNo)</dd>
+
+            <dt class="col-sm-3">Academic Program:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.AcademicProgram.Name)</dd>
+
+            <dt class="col-sm-3">Project Type:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.ProjectType)</dd>
+
+            <dt class="col-sm-3">Submission Date:</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SubmissionDate)</dd>
+
+            <dt class="col-sm-3">Current Status:</dt>
+            <dd class="col-sm-9">
+                <span class="badge
+                    @(Model.Status == ProposalStatus.Approved ? "bg-success" :
+                                            Model.Status == ProposalStatus.Rejected ? "bg-danger" :
+                                            Model.Status == ProposalStatus.ResubmissionRequired ? "bg-warning text-dark" :
+                                            "bg-secondary")">
+                    @Html.DisplayFor(model => model.Status)
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Main Supervisor:</dt>
+            <dd class="col-sm-9">
+                @(Model.MainSupervisorLecturer?.Name ?? "Not Assigned")
+                @if (Model.MainSupervisorLecturer != null)
+                {
+                    @* Changed from LecturerNo to Name, assuming Lecturer model has a Name property *@
+                    <small class="text-muted">(Name: @Model.MainSupervisorLecturer.Name)</small>
+                }
+            </dd>
+
+            @if (!string.IsNullOrEmpty(Model.FilePath))
+            {
+                <dt class="col-sm-3">Proposal File:</dt>
+                <dd class="col-sm-9">
+                    <a asp-action="Download" asp-route-id="@Model.Id" class="btn btn-sm btn-info" target="_blank">Download Proposal PDF</a>
+                </dd>
+            }
+        </dl>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Assign Evaluators</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="AssignEvaluators" asp-route-id="@Model.Id" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" /> @* Hidden field for ProjectProposal Id *@
+
+            <div class="mb-3">
+                <label for="Evaluator1Id" class="form-label">Evaluator 1</label>
+                <select id="Evaluator1Id" name="Evaluator1Id" class="form-select" asp-items="ViewBag.Evaluator1Id">
+                </select>
+                <span class="text-danger">@Html.ValidationMessage("Evaluator1Id")</span>
+            </div>
+
+            <div class="mb-3">
+                <label for="Evaluator2Id" class="form-label">Evaluator 2</label>
+                <select id="Evaluator2Id" name="Evaluator2Id" class="form-select" asp-items="ViewBag.Evaluator2Id">
+                </select>
+                <span class="text-danger">@Html.ValidationMessage("Evaluator2Id")</span>
+            </div>
+
+            <div class="form-group mt-4">
+                <button type="submit" class="btn btn-primary">Save Assignment</button>
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a> @* Assuming an Index action for listing proposals for committee *@
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

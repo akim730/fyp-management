@@ -1,0 +1,97 @@
+﻿@model fypSystem.Models.StudentSupervisor
+
+@{
+    ViewData["Title"] = "Review Supervisor Request";
+}
+
+<h1 class="text-2xl font-bold mb-4">Review Supervisor Request</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div>
+    <h4 class="mb-3">Request Details</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">Student Name</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.Name)</dd>
+
+        <dt class="col-sm-3">Student Matric No.</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.StudentNo)</dd>
+
+        <dt class="col-sm-3">Student Email</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.Email)</dd>
+
+        <dt class="col-sm-3">Student Program</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Student.AcademicProgram.Name)</dd>
+
+        <dt class="col-sm-3">Preferred Supervisor</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Supervisor.Lecturer.Name)</dd>
+
+        <dt class="col-sm-3">Supervisor Staff No.</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Supervisor.Lecturer.StaffNo)</dd>
+
+        <dt class="col-sm-3">Supervisor Program</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Supervisor.Lecturer.AcademicProgram.Name)</dd>
+
+        <dt class="col-sm-3">Request Date</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.RequestDate)</dd>
+
+        <dt class="col-sm-3">Current Status</dt>
+        <dd class="col-sm-9">
+            <span class="badge @(Model.Status == fypSystem.Models.SupervisorAssignmentStatus.Approved ? "bg-success" : Model.Status == fypSystem.Models.SupervisorAssignmentStatus.Pending ? "bg-warning" : "bg-danger")">
+                @Html.DisplayFor(model => model.Status)
+            </span>
+        </dd>
+
+        <dt class="col-sm-3">Supervisor Capacity</dt>
+        <dd class="col-sm-9">
+            @ViewBag.CurrentStudentCount / @ViewBag.MaxStudents
+            @if (ViewBag.CurrentStudentCount >= ViewBag.MaxStudents && Model.Status == fypSystem.Models.SupervisorAssignmentStatus.Pending)
+            {
+                <span class="text-danger ms-2"> (Supervisor is at max capacity!)</span>
+            }
+        </dd>
+
+        @if (Model.Status != fypSystem.Models.SupervisorAssignmentStatus.Pending)
+        {
+            <dt class="col-sm-3">Action Date</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.ActionDate)</dd>
+
+            <dt class="col-sm-3">Committee Remarks</dt>
+            <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.CommitteeRemarks) ? "N/A" : Model.CommitteeRemarks)</dd>
+        }
+    </dl>
+
+    @if (Model.Status == fypSystem.Models.SupervisorAssignmentStatus.Pending)
+    {
+        <h5 class="mt-4 mb-3">Action Request</h5>
+        <form asp-action="Approve" method="post" class="d-inline">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="form-group mb-3">
+                <label for="committeeRemarks" class="control-label">Committee Remarks (Optional)</label>
+                <textarea name="committeeRemarks" id="committeeRemarks" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-success"
+                    @(ViewBag.CurrentStudentCount >= ViewBag.MaxStudents ? "disabled title='Supervisor is at max capacity'" : "")>
+                Approve
+            </button>
+        </form>
+
+        <form asp-action="Reject" method="post" class="d-inline ms-2">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="form-group mb-3">
+                <label for="committeeRemarks" class="control-label">Committee Remarks (Optional)</label>
+                <textarea name="committeeRemarks" id="committeeRemarks" class="form-control" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-danger">Reject</button>
+        </form>
+    }
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>

@@ -1,0 +1,179 @@
+﻿@model fypSystem.Models.ProjectProposal
+@using fypSystem.Models
+
+@{
+    ViewData["Title"] = "My Project Proposal";
+}
+
+<h1 class="display-4 mb-4">My Project Proposal</h1>
+
+@* Display temporary messages *@
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["InfoMessage"] != null)
+{
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        @TempData["InfoMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Your Proposal Details and Overall Status</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Title)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Title)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProjectType)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.ProjectType)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.SubmissionDate)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.SubmissionDate)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9">
+                <span class="badge
+                    @(Model.Status == ProposalStatus.Approved ? "bg-success" :
+                                            Model.Status == ProposalStatus.Rejected ? "bg-danger" :
+                                            Model.Status == ProposalStatus.ResubmissionRequired || Model.Status == ProposalStatus.AcceptedWithConditions ? "bg-warning text-dark" :
+                                            "bg-secondary")">
+                    @Html.DisplayFor(model => model.Status)
+                </span>
+            </dd>
+
+            @if (!string.IsNullOrEmpty(Model.CommitteeFeedback))
+            {
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CommitteeFeedback)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.CommitteeFeedback)</dd>
+            }
+
+            @if (Model.ReviewDate.HasValue)
+            {
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ReviewDate)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.ReviewDate)</dd>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.FilePath))
+            {
+                <dt class="col-sm-3">Uploaded File</dt>
+                <dd class="col-sm-9">
+                    <a asp-action="Download" asp-route-id="@Model.Id" class="btn btn-sm btn-info" target="_blank">Download Proposal PDF</a>
+                </dd>
+            }
+        </dl>
+    </div>
+</div>
+
+@* ===================================================================== *@
+@* SUPERVISOR AND EVALUATOR INFORMATION *@
+@* ===================================================================== *@
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+        <h4 class="mb-0">Supervisor & Evaluator Information</h4>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.MainSupervisorLecturer)</dt>
+            <dd class="col-sm-9">
+                @(Model.MainSupervisorLecturer?.Name ?? "Not Yet Assigned")
+                @if (Model.MainSupervisorLecturer != null)
+                {
+                    <small class="text-muted">(Email: @Model.MainSupervisorLecturer.Email)</small>
+                }
+            </dd>
+
+            @* Evaluator 1 Details and Feedback *@
+            @if (Model.Evaluator1 != null)
+            {
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator1)</dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Evaluator1.Name)
+                    <small class="text-muted">(Email: @Model.Evaluator1.Email)</small>
+                </dd>
+                @if (Model.Evaluator1Recommendation.HasValue)
+                {
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator1Recommendation)</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge
+                                    @(Model.Evaluator1Recommendation == ProposalStatus.Approved ? "bg-success" :
+                                                            Model.Evaluator1Recommendation == ProposalStatus.Rejected ? "bg-danger" :
+                                                            Model.Evaluator1Recommendation == ProposalStatus.AcceptedWithConditions ? "bg-warning text-dark" :
+                                                            "bg-secondary")">
+                    @Html.DisplayFor(model => model.Evaluator1Recommendation)
+                </span>
+            </dd>
+                        }
+                @if (!string.IsNullOrEmpty(Model.Evaluator1Feedback))
+                {
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator1Feedback)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Evaluator1Feedback)</dd>
+                }
+                @if (Model.Evaluator1ReviewDate.HasValue)
+                {
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator1ReviewDate)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Evaluator1ReviewDate)</dd>
+                }
+            }
+
+            @* Evaluator 2 Details and Feedback *@
+            @if (Model.Evaluator2 != null)
+            {
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator2)</dt>
+                <dd class="col-sm-9">
+                    @Html.DisplayFor(model => model.Evaluator2.Name)
+                    <small class="text-muted">(Email: @Model.Evaluator2.Email)</small>
+                </dd>
+                @if (Model.Evaluator2Recommendation.HasValue)
+                {
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator2Recommendation)</dt>
+                    <dd class="col-sm-9">
+                        <span class="badge
+                                    @(Model.Evaluator2Recommendation == ProposalStatus.Approved ? "bg-success" :
+                                                            Model.Evaluator2Recommendation == ProposalStatus.Rejected ? "bg-danger" :
+                                                            Model.Evaluator2Recommendation == ProposalStatus.AcceptedWithConditions ? "bg-warning text-dark" :
+                                                            "bg-secondary")">
+                    @Html.DisplayFor(model => model.Evaluator2Recommendation)
+                </span>
+            </dd>
+                        }
+                @if (!string.IsNullOrEmpty(Model.Evaluator2Feedback))
+                {
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator2Feedback)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Evaluator2Feedback)</dd>
+                }
+                @if (Model.Evaluator2ReviewDate.HasValue)
+                {
+                    <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Evaluator2ReviewDate)</dt>
+                    <dd class="col-sm-9">@Html.DisplayFor(model => model.Evaluator2ReviewDate)</dd>
+                }
+            }
+        </dl>
+    </div>
+</div>
+
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">Back to My Proposals</a>
+    @* Allow resubmission if status is Rejected, ResubmissionRequired, or AcceptedWithConditions *@
+    @if (Model.Status == ProposalStatus.Rejected ||
+        Model.Status == ProposalStatus.ResubmissionRequired ||
+        Model.Status == ProposalStatus.AcceptedWithConditions) @* Added AcceptedWithConditions *@
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning ms-2">Edit / Resubmit Proposal</a>
+    }
+</div>
